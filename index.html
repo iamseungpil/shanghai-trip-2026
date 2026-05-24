@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>상하이 여행 2026</title>
+<style>
+:root{ color-scheme: light; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  background:#f6f6f4; color:#1f2328; line-height:1.5; font-size:14px;
+}
+.wrap{ max-width:1080px; margin:0 auto; padding:16px; }
+a{ color:inherit; }
+
+.hdr{ background:#fff; border:1px solid #e6e6e2; border-radius:14px; padding:16px 18px; }
+.hdr h1{ font-size:19px; }
+.hdr .sub{ color:#6b7280; font-size:13px; margin-top:2px; }
+.settings{ display:flex; flex-wrap:wrap; gap:10px 16px; margin-top:12px; padding:10px 12px;
+  background:#f6f6f4; border:1px solid #ececea; border-radius:10px; align-items:center; }
+.settings label{ font-size:12px; color:#4b5563; display:flex; align-items:center; gap:6px; }
+.settings input{ font-family:inherit; font-size:13px; border:1px solid #d8d8d4; border-radius:7px; padding:5px 8px; }
+.settings input[type=number]{ width:62px; }
+.stats{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+.stat{ background:#f6f6f4; border:1px solid #ececea; border-radius:10px; padding:7px 12px; }
+.stat b{ font-size:16px; display:block; }
+.stat span{ font-size:11px; color:#6b7280; }
+.hdr-actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+
+button{ font-family:inherit; cursor:pointer; border:none; border-radius:9px; font-size:13px; padding:8px 13px; }
+.btn-primary{ background:#c0392b; color:#fff; font-weight:600; }
+.btn-ghost{ background:#fff; border:1px solid #d8d8d4; color:#1f2328; }
+.btn-sm{ padding:4px 9px; font-size:12px; border-radius:7px; }
+
+.tabs{ display:flex; gap:6px; overflow-x:auto; margin:16px 0 14px; padding-bottom:4px; }
+.tab{ flex:0 0 auto; background:#fff; border:1px solid #e2e2de; border-radius:10px; padding:8px 12px;
+  text-align:left; min-width:96px; }
+.tab.active{ background:#1f2328; color:#fff; border-color:#1f2328; }
+.tab .d{ font-size:11px; opacity:.7; }
+.tab .t{ font-size:13px; font-weight:600; margin-top:1px; white-space:nowrap; }
+.tab .c{ font-size:11px; opacity:.7; margin-top:2px; }
+
+.cols{ display:flex; gap:14px; align-items:flex-start; }
+.col-main{ flex:1 1 460px; min-width:0; }
+.col-side{ flex:0 0 290px; }
+@media(max-width:780px){ .cols{ flex-direction:column; } .col-side{ flex-basis:auto; width:100%; } }
+
+.panel{ background:#fff; border:1px solid #e6e6e2; border-radius:14px; padding:14px; margin-bottom:14px; }
+.panel h2{ font-size:14px; margin-bottom:4px; }
+.panel .h-note{ font-size:12px; color:#6b7280; margin-bottom:10px; }
+
+.card{ position:relative; border:1px solid #e6e6e2; border-radius:11px; padding:10px 12px;
+  margin-bottom:9px; background:#fff; border-left-width:4px; }
+.card.review{ border-left-color:#e0a500 !important; background:#fffdf4; }
+.card .row1{ display:flex; align-items:baseline; gap:8px; }
+.card .time{ font-variant-numeric:tabular-nums; font-weight:700; font-size:13px; color:#374151; flex:0 0 auto; }
+.card .title{ font-weight:600; font-size:14px; }
+.card .meta{ display:flex; flex-wrap:wrap; gap:6px 10px; margin-top:5px; font-size:12px; color:#6b7280; align-items:center; }
+.chip{ font-size:11px; padding:1px 7px; border-radius:20px; color:#fff; font-weight:600; }
+.chip.warn{ background:#e0a500; }
+.chip.resv{ background:#7b5cc4; }
+.chip.booked{ background:#5a9e58; }
+.chk-item{ display:flex; gap:9px; align-items:flex-start; border:1px solid #e6e6e2;
+  border-radius:9px; padding:8px 11px; margin-bottom:7px; }
+.chk-item.done{ background:#f3f7f3; }
+.chk-item input{ margin-top:2px; width:16px; height:16px; flex:0 0 auto; }
+.chk-t{ font-weight:600; font-size:13px; }
+.chk-t.done{ text-decoration:line-through; color:#9aa0a6; }
+.chk-r{ font-size:12px; color:#5a4a8a; margin-top:2px; }
+.cost{ font-weight:700; color:#1f2328; }
+.maplink{ color:#2f6fb5; text-decoration:none; }
+.maplink:hover{ text-decoration:underline; }
+.note{ font-size:12px; color:#8a6a17; margin-top:5px; }
+.card-actions{ position:absolute; top:8px; right:8px; display:flex; gap:4px; }
+.icon-btn{ background:#f1f1ee; border:none; border-radius:6px; width:24px; height:24px; font-size:12px; line-height:1; }
+.icon-btn:hover{ background:#e3e3df; }
+
+.menu-toggle{ margin-top:7px; background:#f4ede2; color:#8a6a17; border:none; border-radius:7px;
+  font-size:12px; font-weight:600; padding:4px 10px; }
+.menu-toggle:hover{ background:#ece1cd; }
+.menu-panel{ margin-top:8px; border-top:1px dashed #e6e6e2; padding-top:8px; }
+.menu-item{ display:flex; gap:9px; align-items:flex-start; padding:6px 0; border-bottom:1px dashed #f0f0ec; }
+.menu-item:last-of-type{ border-bottom:none; }
+.mi-ic{ flex:0 0 42px; height:42px; background:#faf8f4; border:1px solid #efe9df; border-radius:9px;
+  display:flex; align-items:center; justify-content:center; }
+.mi-n{ font-weight:600; font-size:13px; }
+.mi-d{ font-size:12px; color:#6b7280; }
+.mi-p{ font-size:11px; color:#c0392b; font-weight:600; margin-top:1px; }
+.mi-foot{ font-size:11px; color:#9aa0a6; margin-top:7px; }
+
+svg.zonemap{ width:100%; height:auto; display:block; border-radius:10px; }
+.zone-base{ fill:#ececef; stroke:#d6d8de; stroke-width:1; }
+.zone-active{ fill:#f4c9c4; stroke:#c0392b; stroke-width:2; }
+.zone-label{ font-size:9px; fill:#4b5563; font-weight:600; }
+.zone-label.on{ fill:#7a2018; }
+.river{ fill:none; stroke:#bcd6e8; stroke-width:7; stroke-linecap:round; }
+.hotel-dot{ fill:#c0392b; stroke:#fff; stroke-width:1.5; }
+
+.route-row{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.btn-route{ display:block; text-align:center; background:#2f6fb5; color:#fff; font-weight:600;
+  font-size:13px; padding:9px 12px; border-radius:9px; text-decoration:none; }
+.btn-route:hover{ background:#27598f; }
+
+.bud-row{ display:flex; justify-content:space-between; padding:4px 0; font-size:13px; border-bottom:1px dashed #ececea; }
+.bud-row:last-child{ border-bottom:none; }
+.bud-row.total{ font-weight:700; font-size:15px; border-top:2px solid #1f2328; margin-top:4px; padding-top:7px; }
+.bud-row .day-link{ cursor:pointer; }
+.bud-row .day-link:hover{ color:#c0392b; }
+.catbar{ display:flex; height:12px; border-radius:6px; overflow:hidden; margin:8px 0 6px; }
+.catlegend{ display:flex; flex-wrap:wrap; gap:4px 10px; font-size:11px; color:#6b7280; }
+.catlegend i{ width:9px; height:9px; border-radius:2px; display:inline-block; margin-right:3px; }
+
+.pool-item{ display:flex; align-items:center; gap:8px; border:1px dashed #d8d8d4;
+  border-radius:9px; padding:8px 10px; margin-bottom:7px; background:#fafafa; }
+.pool-item .pi-title{ font-weight:600; font-size:13px; flex:1; }
+.empty{ color:#9aa0a6; font-size:12px; text-align:center; padding:14px 6px; }
+
+.rev-item{ border-left:3px solid #e0a500; background:#fffdf4; padding:8px 11px; border-radius:8px; margin-bottom:8px; }
+.rev-item .ri-t{ font-weight:600; font-size:13px; }
+.rev-item .ri-r{ font-size:12px; color:#6b5a1e; margin-top:2px; }
+
+.modal-bg{ position:fixed; inset:0; background:rgba(20,22,26,.45); display:none;
+  align-items:center; justify-content:center; padding:16px; z-index:50; }
+.modal-bg.show{ display:flex; }
+.modal{ background:#fff; border-radius:14px; padding:18px; width:100%; max-width:380px; max-height:90vh; overflow:auto; }
+.modal h3{ font-size:15px; margin-bottom:12px; }
+.fld{ margin-bottom:10px; }
+.fld label{ font-size:12px; color:#6b7280; display:block; margin-bottom:3px; }
+.fld input,.fld select,.fld textarea{ width:100%; font-family:inherit; font-size:13px;
+  border:1px solid #d8d8d4; border-radius:8px; padding:7px 9px; }
+.fld textarea{ resize:vertical; min-height:46px; }
+.fld-row{ display:flex; gap:8px; }
+.fld-row .fld{ flex:1; }
+.modal-actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:6px; }
+
+#toast{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%);
+  background:#1f2328; color:#fff; padding:9px 16px; border-radius:9px; font-size:13px;
+  opacity:0; transition:opacity .25s; pointer-events:none; z-index:60; max-width:80%; }
+#toast.show{ opacity:1; }
+.foot{ font-size:11px; color:#9aa0a6; text-align:center; padding:8px 0 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <h1>🇨🇳 상하이 여행 2026</h1>
+    <div class="sub" id="hdr-sub"></div>
+    <div class="settings">
+      <label>🗓 출발일 <input type="date" id="f-start"></label>
+      <label>여행 일수 <input type="number" id="f-days" min="2" max="14"> 일</label>
+      <label>🏨 숙소 <input type="text" id="f-hotel" style="width:150px"></label>
+      <label><input type="checkbox" id="f-linda"> 캘린더 내보낼 때 linda010706@gmail.com 참석자 추가</label>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="hdr-actions">
+      <button class="btn-primary" id="btn-export">📅 구글 캘린더로 내보내기</button>
+      <button class="btn-ghost" id="btn-add">➕ 활동 추가</button>
+      <button class="btn-ghost" id="btn-reset">↺ 초안으로 초기화</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="cols">
+    <div class="col-main">
+      <div class="panel">
+        <h2 id="day-title">Day</h2>
+        <div class="h-note" id="day-note"></div>
+        <div id="timeline"></div>
+        <button class="btn-ghost btn-sm" id="btn-add-day">＋ 이 날에 활동 추가</button>
+      </div>
+    </div>
+
+    <div class="col-side">
+      <div class="panel">
+        <h2>📍 오늘의 권역</h2>
+        <div class="h-note" id="zone-note"></div>
+        <svg class="zonemap" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+          <path class="river" d="M205 18 C 198 70, 232 120, 210 210"></path>
+          <rect id="z-jingan"  class="zone-base" x="92"  y="22"  width="116" height="40" rx="8"></rect>
+          <rect id="z-fc"      class="zone-base" x="14"  y="74"  width="104" height="64" rx="8"></rect>
+          <rect id="z-huangpu" class="zone-base" x="124" y="74"  width="74"  height="64" rx="8"></rect>
+          <rect id="z-westbund"class="zone-base" x="40"  y="150" width="150" height="48" rx="8"></rect>
+          <rect id="z-pudong"  class="zone-base" x="232" y="40"  width="116" height="150" rx="8"></rect>
+          <text class="zone-label" id="t-jingan"  x="150" y="46"  text-anchor="middle">징안·난징시루</text>
+          <text class="zone-label" id="t-fc"      x="66"  y="100" text-anchor="middle">프랑스 조계</text>
+          <text class="zone-label" id="t-fc2"     x="66"  y="113" text-anchor="middle">우캉·안푸루</text>
+          <text class="zone-label" id="t-huangpu" x="161" y="103" text-anchor="middle">황푸·신천지</text>
+          <text class="zone-label" id="t-huangpu2"x="161" y="116" text-anchor="middle">田子坊</text>
+          <text class="zone-label" id="t-westbund"x="115" y="178" text-anchor="middle">西岸·쉬후이 강변</text>
+          <text class="zone-label" id="t-pudong"  x="290" y="110" text-anchor="middle">푸둥·디즈니</text>
+          <text class="zone-label" id="t-pudong2" x="290" y="123" text-anchor="middle">前滩·陆家嘴</text>
+          <circle class="hotel-dot" id="hotel-dot" cx="161" cy="106" r="5"></circle>
+        </svg>
+        <div class="route-row">
+          <a class="btn-route" id="route-btn" target="_blank" rel="noopener">🗺 오늘 동선 구글 지도에서 보기</a>
+          <a class="maplink" id="hotel-btn" target="_blank" rel="noopener">🏨 숙소 위치 구글 지도에서 보기</a>
+        </div>
+        <div class="h-note" style="margin-top:8px">아티팩트 미리보기 안에는 보안상 지도를 직접 띄울 수 없어, 위 버튼이 <b>실제 구글 지도</b>를 새 탭으로 엽니다.</div>
+      </div>
+
+      <div class="panel">
+        <h2>💰 예산 요약 <span style="font-weight:400;color:#9aa0a6;font-size:11px">2인 · 원</span></h2>
+        <div class="catbar" id="catbar"></div>
+        <div class="catlegend" id="catlegend"></div>
+        <div id="budget" style="margin-top:8px"></div>
+        <div class="h-note" style="margin-top:8px">항공권·숙박 미포함. 금액은 2026년 5월 기준 1위안≈190원으로 환산한 추정치입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>🧳 가고 싶은 장소 풀 <span style="font-weight:400;color:#9aa0a6;font-size:11px">미배정</span></h2>
+    <div class="h-note">날짜에서 뺀 장소가 여기 모입니다. 새 장소도 추가할 수 있어요.</div>
+    <div id="pool"></div>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button class="btn-ghost btn-sm" id="btn-pool-add">＋ 풀에 장소 추가</button>
+      <button class="btn-ghost btn-sm" id="btn-autoassign">🎯 자동 배정</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>📅 예약 체크리스트 <span id="resv-count" style="font-weight:400;color:#9aa0a6;font-size:11px"></span></h2>
+    <div class="h-note">미리 예약해 두면 좋은 항목입니다. 예약을 끝내면 체크하세요 — 상태는 저장됩니다.</div>
+    <div id="resv-list"></div>
+  </div>
+
+  <div class="panel">
+    <h2>⚠️ 겹침 · 검토 추천</h2>
+    <div class="h-note">컨셉이 겹치거나 위치·정보 확인이 필요한 항목입니다. 빼려면 카드의 ✕ 버튼으로 풀로 보내세요.</div>
+    <div id="review"></div>
+  </div>
+
+  <div class="foot">상하이 여행 라이브 아티팩트 · 변경사항은 자동 저장됩니다</div>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title">활동 편집</h3>
+    <div class="fld"><label>제목</label><input id="m-title" placeholder="예: 안푸루 점심"></div>
+    <div class="fld-row">
+      <div class="fld"><label>날짜</label><select id="m-day"></select></div>
+      <div class="fld"><label>분류</label><select id="m-cat"></select></div>
+    </div>
+    <div class="fld-row">
+      <div class="fld"><label>시작</label><input id="m-time" placeholder="10:00"></div>
+      <div class="fld"><label>종료</label><input id="m-end" placeholder="11:30"></div>
+      <div class="fld"><label>비용(원·2인)</label><input id="m-cost" type="number" placeholder="0"></div>
+    </div>
+    <div class="fld"><label>지도 검색어 (구글 지도)</label><input id="m-maps" placeholder="예: 安福路 上海"></div>
+    <div class="fld"><label>메모</label><textarea id="m-note" placeholder="선택 사항"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="m-cancel">취소</button>
+      <button class="btn-primary" id="m-save">저장</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+const CAL_ID = "eabae536d94e015b89bd8f50892ef782c154693fe14f5b7104db0e516750321a@group.calendar.google.com";
+const LINDA  = "linda010706@gmail.com";
+const STORE  = "shanghai_trip_2026_v3";
+
+const DAY_META = {
+  1:{title:"도착 · 신천지", zone:"huangpu"},
+  2:{title:"우캉루 · 안푸루", zone:"fc"},
+  3:{title:"상하이 디즈니랜드", zone:"pudong"},
+  4:{title:"西岸 · 쉬후이", zone:"westbund"},
+  5:{title:"차 · 카페", zone:"huangpu"},
+  6:{title:"쇼핑 정리", zone:"jingan"},
+  7:{title:"마무리 · 출발", zone:"huangpu"}
+};
+const ZONES = ["jingan","fc","huangpu","westbund","pudong"];
+const ZONE_NOTE = {
+  huangpu:"황푸 — 신천지·田子坊 일대. 도심이라 숙소가 가까우면 이동이 편합니다.",
+  fc:"프랑스 조계 — 우캉루·안푸루·후난루. 카페·편집숍이 도보권에 몰려 있습니다.",
+  pudong:"푸둥 — 디즈니랜드·前滩·陆家嘴. 강 동쪽이라 푸시 일정과는 이동시간이 큽니다.",
+  westbund:"西岸 — 쉬후이 황푸강 강변. 미술관·문화시설이 강변을 따라 이어집니다.",
+  jingan:"징안·난징시루 — 백화점·대형 매장 밀집. 쇼핑 동선 잡기 좋습니다."
+};
+const CATS = {
+  "관광":{c:"#2f6fb5"}, "식사":{c:"#d98324"}, "카페":{c:"#8a6d4b"},
+  "쇼핑":{c:"#c2548a"}, "스파":{c:"#1f9a8f"}, "이동":{c:"#7a8290"}, "휴식":{c:"#5a9e58"}
+};
+
+/* ---- food illustrations (inline SVG, no network needed) ---- */
+const ICON = {
+  coffee:'<rect x="12" y="16" width="16" height="16" rx="3" fill="#8a6d4b"/><path d="M28 19h4a3 3 0 0 1 0 6h-4" fill="none" stroke="#8a6d4b" stroke-width="2.5"/><path d="M16 9c0 3-2 3-2 5M22 9c0 3-2 3-2 5" stroke="#c9b8a3" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  tea:'<path d="M11 20h18l-2 10a4 4 0 0 1-4 3h-6a4 4 0 0 1-4-3z" fill="#5a8f5a"/><path d="M20 8c4 2 5 6 2 10-4-2-5-6-2-10z" fill="#7bb37b"/><line x1="20" y1="11" x2="21" y2="18" stroke="#3f6b3f" stroke-width="1.5"/>',
+  duck:'<ellipse cx="21" cy="27" rx="11" ry="7" fill="#d98324"/><circle cx="30" cy="18" r="5" fill="#d98324"/><path d="M34 17l6 1-5 3z" fill="#e0a500"/><circle cx="31" cy="17" r="1.3" fill="#1f2328"/><path d="M11 28c-3 1-5 0-6-2 2 0 3-1 5-1z" fill="#c06f1a"/>',
+  fish:'<path d="M9 22c5-7 19-7 25 0-6 7-20 7-25 0z" fill="#2f6fb5"/><path d="M34 22l7-5v10z" fill="#2f6fb5"/><circle cx="16" cy="20" r="1.7" fill="#fff"/>',
+  rice:'<path d="M9 23h26a13 13 0 0 1-26 0z" fill="#c0392b"/><path d="M12 23a10 5 0 0 1 20 0z" fill="#fff"/><line x1="25" y1="9" x2="33" y2="22" stroke="#8a6d4b" stroke-width="2"/><line x1="29" y1="8" x2="36" y2="21" stroke="#8a6d4b" stroke-width="2"/>',
+  noodle:'<path d="M9 24h26a13 13 0 0 1-26 0z" fill="#d98324"/><path d="M13 24c1-5 4-7 4-12M21 24c0-6 2-8 2-13M28 24c0-5 3-7 4-11" stroke="#e8c46a" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+  dumpling:'<path d="M10 29c0-9 5-14 12-14s12 5 12 14z" fill="#f3ede0" stroke="#d8c9a8" stroke-width="1.5"/><path d="M13 25c2-3 4-3 4 0M21 23c2-3 4-3 4 0M29 25c-2-3-4-3-4 0" stroke="#cdbf9c" stroke-width="1.6" fill="none"/>',
+  bread:'<path d="M12 19a8 6 0 0 1 20 0v12a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2z" fill="#e0a55a"/><rect x="16" y="22" width="12" height="7" rx="2" fill="#c98233"/>',
+  cake:'<path d="M12 30l10-16 10 16z" fill="#e8b3c8"/><path d="M12 30l10-5 10 5v3a1 1 0 0 1-1 1H13a1 1 0 0 1-1-1z" fill="#c2548a"/><circle cx="22" cy="14" r="2.3" fill="#c0392b"/>',
+  salad:'<path d="M9 23h26a13 13 0 0 1-26 0z" fill="#5a9e58"/><circle cx="17" cy="20" r="4" fill="#7bb37b"/><circle cx="25" cy="19" r="4.5" fill="#8fc78c"/><circle cx="22" cy="22" r="3.4" fill="#c2548a"/>',
+  soup:'<path d="M10 24h24a12 12 0 0 1-24 0z" fill="#1f9a8f"/><path d="M13 24a9 4 0 0 1 18 0z" fill="#cdeae7"/><path d="M18 11c0 3-2 3-2 6M26 11c0 3-2 3-2 6" stroke="#bcd6d3" stroke-width="2" fill="none" stroke-linecap="round"/>'
+};
+function foodIcon(k){ return '<svg viewBox="0 0 44 44" width="40" height="40">'+(ICON[k]||ICON.rice)+'</svg>'; }
+const GENERIC_MENU = {
+  "식사":[
+    {n:"상하이 현지 식당",d:"훙사오러우·생선요리 등 본고장 메뉴를 추천.",p:"2인 약 ¥250",ic:"fish"},
+    {n:"샤오롱바오 小笼包",d:"상하이에 왔다면 꼭 먹는 육즙 만두.",p:"약 ¥50",ic:"dumpling"}
+  ],
+  "카페":[
+    {n:"스페셜티 커피",d:"플랫 화이트·드립 커피 한 잔.",p:"약 ¥35",ic:"coffee"},
+    {n:"디저트",d:"케이크·페이스트리 한 조각 곁들이기.",p:"약 ¥40",ic:"cake"}
+  ]
+};
+
+function defaults(){ return [
+  {id:"a1",day:1,time:"14:00",end:"16:00",title:"공항 → 숙소 이동",cat:"이동",cost:30000,maps:"上海浦东国际机场",note:"입국·짐 정리",review:false},
+  {id:"a2",day:1,time:"16:30",end:"17:30",title:"숙소 체크인 · 휴식",cat:"휴식",cost:0,maps:"#HOTEL#",note:"",review:false},
+  {id:"a3",day:1,time:"17:30",end:"19:00",title:"신천지 산책 (헌지우이치엔 일대)",cat:"관광",cost:0,maps:"上海新天地",note:"신천지 헌지우이치엔",review:false},
+  {id:"a4",day:1,time:"19:00",end:"21:00",title:"신천지 저녁 식사",cat:"식사",cost:60000,maps:"新天地 上海 餐厅",note:"",review:false,
+    menu:[
+      {n:"샤오롱바오 小笼包",d:"신천지 일대 딤섬집의 육즙 만두.",p:"약 ¥50~70",ic:"dumpling"},
+      {n:"훙사오러우 红烧肉",d:"간장에 졸인 삼겹살 — 상하이 본고장 메뉴.",p:"약 ¥60~80",ic:"rice"},
+      {n:"마란터우 무침 马兰头",d:"상하이식 봄나물 무침, 느끼함을 잡아줍니다.",p:"약 ¥30",ic:"salad"}
+    ]},
+
+  {id:"a5",day:2,time:"10:00",end:"11:30",title:"HARMAY 话梅 (武康路)",cat:"쇼핑",cost:100000,maps:"HARMAY 话梅 武康路 上海",note:"화장품 미니어처. 매장은 2021년 安福路→武康路로 이전 (옛 자리엔 introlemons 레몬티 카페).",review:false},
+  {id:"a6",day:2,time:"11:30",end:"12:30",title:"Paal 카페",cat:"카페",cost:25000,maps:"Paal cafe 上海",note:"",review:false,
+    menu:[
+      {n:"플랫 화이트",d:"Paal의 시그니처 에스프레소 음료.",p:"약 ¥35",ic:"coffee"},
+      {n:"브런치 플레이트",d:"에그·토스트 구성의 올데이 브런치.",p:"약 ¥80",ic:"bread"}
+    ]},
+  {id:"a7",day:2,time:"12:30",end:"14:00",title:"안푸루 점심",cat:"식사",cost:50000,maps:"安福路 上海 餐厅",note:"",review:false,
+    menu:[
+      {n:"안푸루 비스트로",d:"우캉·안푸루 거리의 카페·비스트로에서 가볍게.",p:"2인 약 ¥200",ic:"salad"},
+      {n:"국수·면 요리",d:"가볍게 먹고 쇼핑 동선을 이어가기 좋습니다.",p:"약 ¥40~60",ic:"noodle"}
+    ]},
+  {id:"a8",day:2,time:"14:00",end:"15:30",title:"To Summer 观夏 (观夏闲庭)",cat:"쇼핑",cost:80000,maps:"观夏 To Summer 湖南路 上海",note:"동방 향수 편집숍. 상하이 플래그십 '观夏闲庭'은 후난루 111호 (프랑스 조계).",review:false},
+  {id:"a9",day:2,time:"18:00",end:"20:00",title:"提督 Tidu (TIDU RESERVE) 베이징덕",cat:"식사",cost:150000,maps:"提督臻选 TIDU RESERVE 前滩太古里 上海",resv:"고급 京菜 레스토랑 — 사전 예약 강력 권장. 大众点评 앱·전화로 예약하세요.",note:"创新 京菜(베이징 요리) 레스토랑. 인당 약 ¥395.",review:true,
+    reviewReason:"提督(TIDU RESERVE)은 베이징덕 전문 京菜 레스토랑이고 前滩太古里(푸둥)에 있어요. Day 2(프랑스 조계)와 권역이 달라 이동이 깁니다 — 디즈니랜드 가는 날(Day 3) 저녁 등으로 옮기는 걸 검토하세요.",
+    menu:[
+      {n:"이야싼츠 一鸭三吃",d:"오리 한 마리를 세 가지로 내는 Tidu 시그니처 코스.",p:"인당 약 ¥395",ic:"duck"},
+      {n:"우웨이 캐비어 오리껍질",d:"8년산 캐비어를 올린 바삭 오리껍질, 다섯 식감.",p:"코스 포함",ic:"fish"},
+      {n:"체리 푸아그라 · 와규 볶음밥",d:"오리 외 별미 — 체리향 푸아그라 볼, 와규 볶음밥.",p:"별도 주문",ic:"rice"}
+    ]},
+  {id:"a10",day:2,time:"15:45",end:"16:45",title:"경운화 (가게명 확인 필요)",cat:"카페",cost:40000,maps:"景云画 上海",note:"🏠 가게 이름: 경운화",review:true,
+    reviewReason:"가게명 '경운화'의 한자·업종·정확한 위치를 확인하지 못했어요. 카페로 임시 분류했으니 실제 정보 확인 후 수정하세요."},
+  {id:"a12",day:2,time:"20:00",end:"20:45",title:"숙소 복귀 이동",cat:"이동",cost:15000,maps:"#HOTEL#",note:"",review:false},
+
+  {id:"a13",day:3,time:"09:00",end:"09:45",title:"디즈니랜드 이동 (지하철 11호선)",cat:"이동",cost:12000,maps:"上海迪士尼度假区 地铁",note:"",review:false},
+  {id:"a14",day:3,time:"10:00",end:"20:00",title:"상하이 디즈니랜드",cat:"관광",cost:285000,maps:"Shanghai Disneyland",resv:"날짜 지정 입장권 사전 구매 필수 (공식 앱·Trip.com). 입장 후 인기 어트랙션은 디즈니 앱에서 시간 예약.",note:"성수기(7월) 1일권 — 1인 약 ¥699~799, 2인 합계 추정. 인기 어트랙션은 앱으로 예약.",review:false},
+  {id:"a15",day:3,time:"12:30",end:"13:30",title:"파크 내 점심",cat:"식사",cost:55000,maps:"",note:"",review:false,
+    menu:[
+      {n:"테마 레스토랑 세트",d:"파크 내 식당은 대기·가격대가 높음. 앱으로 미리 확인.",p:"인당 약 ¥120~180",ic:"rice"},
+      {n:"미키 모양 간식",d:"포토용 간식·음료로 가볍게.",p:"약 ¥40",ic:"cake"}
+    ]},
+  {id:"a16",day:3,time:"18:00",end:"19:00",title:"파크 내 저녁 · 간식",cat:"식사",cost:60000,maps:"",note:"",review:false,
+    menu:[
+      {n:"퍼레이드 전 가벼운 저녁",d:"야간 쇼 전 푸드코트·테마 식당에서.",p:"인당 약 ¥130",ic:"noodle"},
+      {n:"츄러스·팝콘",d:"불꽃쇼를 기다리며 먹는 간식.",p:"약 ¥45",ic:"bread"}
+    ]},
+  {id:"a17",day:3,time:"19:00",end:"20:00",title:"디즈니 기념품",cat:"쇼핑",cost:50000,maps:"",note:"",review:false},
+  {id:"a18",day:3,time:"20:30",end:"21:15",title:"숙소 복귀 이동",cat:"이동",cost:12000,maps:"#HOTEL#",note:"",review:false},
+
+  {id:"a19",day:4,time:"10:30",end:"12:30",title:"上海西岸美术馆 (웨스트번드 미술관)",cat:"관광",cost:75000,maps:"西岸美术馆 上海 龙腾大道2600号",resv:"예약 필수는 아님 — '西岸生活' 미니프로그램 온라인 구매 또는 현장 구매. 무료 도슨트(수·토 14시)는 예약 필요.",note:"2층 전시 입장권 1인 약 ¥198, 1층은 무료. 월요일 휴관 (Day 4가 일요일이면 정상 운영).",review:false},
+  {id:"a20",day:4,time:"12:30",end:"14:00",title:"西岸 강변 점심",cat:"식사",cost:45000,maps:"西岸 上海 餐厅",note:"",review:false,
+    menu:[
+      {n:"미술관 카페 · 강변 레스토랑",d:"西岸 강변 데크의 브런치/카페.",p:"2인 약 ¥220",ic:"salad"},
+      {n:"가벼운 면 요리",d:"오후 일정을 위해 가볍게.",p:"약 ¥50",ic:"noodle"}
+    ]},
+  {id:"a21",day:4,time:"14:30",end:"16:00",title:"쉬후이구 차오시베이루 158호",cat:"쇼핑",cost:40000,maps:"漕溪北路158号 上海",note:"📍徐汇区 漕溪北路158号",review:true,
+    reviewReason:"徐汇区 漕溪北路158号 — 이 주소에 무엇이 있는지(매장·방문 목적)를 확인하지 못했어요. 임시로 쇼핑으로 분류했습니다."},
+  {id:"a22",day:4,time:"16:30",end:"19:00",title:"漾·SPACE 汤泉生活 (온천·스파)",cat:"스파",cost:160000,maps:"漾SPACE汤泉生活 陆家嘴 上海",note:"입장 1인 약 ¥435 (패키지에 따라 ¥298~). 과일·음료 무료 제공.",resv:"성수기 혼잡 — 방문 전 예약 권장.",review:true,
+    reviewReason:"漾·SPACE汤泉生活은 陆家嘴(푸둥 浦电路)에 있어요. Day 4 권역(西岸·쉬후이)과 강 건너편이라 이동시간을 고려하세요."},
+  {id:"a23",day:4,time:"19:30",end:"21:00",title:"저녁 식사",cat:"식사",cost:55000,maps:"",note:"",review:false},
+  {id:"a24",day:4,time:"21:00",end:"21:30",title:"숙소 복귀 이동",cat:"이동",cost:15000,maps:"#HOTEL#",note:"",review:false},
+
+  {id:"a25",day:5,time:"10:30",end:"12:00",title:"布兰兔的植物庄园 (田子坊店)",cat:"카페",cost:35000,maps:"布兰兔的植物庄园 田子坊 上海",note:"식물 과일차 + 토끼 테마 기념품. 上海 田子坊(黄浦区)에 지점 있음.",review:true,
+    reviewReason:"리스트엔 칭다오 점이 적혀 있었지만 上海 田子坊점이 있어 방문 가능합니다. 다만 teastone·隐溪茶馆과 함께 '차·음료' 컨셉이 하루에 겹쳐요 — 셋 중 일부만 추천.",
+    menu:[
+      {n:"식물 과일차 植物果茶",d:"布兰兔 시그니처 — 화사한 빛깔의 과일차.",p:"약 ¥45",ic:"tea"},
+      {n:"토끼 테마 디저트",d:"빈티지 찻잔에 담겨 나오는 디저트·굿즈.",p:"약 ¥30~",ic:"cake"}
+    ]},
+  {id:"a26",day:5,time:"12:00",end:"13:30",title:"점심",cat:"식사",cost:45000,maps:"",note:"",review:false},
+  {id:"a27",day:5,time:"14:00",end:"15:30",title:"tea'stone 신식 찻집 (신천지)",cat:"카페",cost:30000,maps:"tea'stone 新天地 上海",note:"상하이 1호점은 신천지. 차 1인 1주전자, 리필 없음.",review:true,
+    reviewReason:"신식 찻집 — 隐溪茶馆과 컨셉이 겹쳐요. 둘 중 하나만 가도 충분합니다.",
+    menu:[
+      {n:"화견미인 花见美人",d:"인기 1위 모란 향 차. 비스킷 2개 포함.",p:"¥65 / 주전자",ic:"tea"},
+      {n:"라오바이차 老白茶",d:"숙성 백차. 차 가격대 ¥38~168.",p:"¥99 / 주전자",ic:"tea"},
+      {n:"운영 방식",d:"1인 1주전자, 리필 없음 — 2인이면 2주전자.",p:"2인 약 ¥130",ic:"soup"}
+    ]},
+  {id:"a28",day:5,time:"15:30",end:"17:00",title:"隐溪茶馆 (은계차관)",cat:"카페",cost:60000,maps:"隐溪茶馆 上海",note:"전통 신중식 찻집. 지점 다수 (남징시루·쉬자후이 등).",resv:"인기 찻집 — 방문 시간대 예약 권장. 2인 애프터눈티 세트는 사전 예약.",review:true,
+    reviewReason:"전통 찻집 — tea'stone과 겹침. 둘 중 하나만 추천. 오전(9:30~13시)·저녁 시간대가 인당 약 ¥120로 더 저렴해요.",
+    menu:[
+      {n:"더블 애프터눈티 세트",d:"2인 세트 — 차 + 과일 + 디저트 구성.",p:"2인 약 ¥279",ic:"tea"},
+      {n:"차 선택",d:"생푸얼·홍차·모리룽주·리치홍차 중 선택.",p:"세트 포함",ic:"tea"},
+      {n:"시간대 팁",d:"오전·저녁 시간대는 인당 약 ¥120로 저렴.",p:"—",ic:"soup"}
+    ]},
+  {id:"a29",day:5,time:"17:30",end:"19:00",title:"저녁 식사",cat:"식사",cost:50000,maps:"",note:"",review:false},
+  {id:"a30",day:5,time:"19:00",end:"19:30",title:"숙소 복귀 이동",cat:"이동",cost:15000,maps:"#HOTEL#",note:"",review:false},
+
+  {id:"a31",day:6,time:"10:30",end:"11:30",title:"MINISO LAND (키링·인형)",cat:"쇼핑",cost:40000,maps:"MINISO LAND 南京路 上海",note:"쇼핑 리스트 5",review:false},
+  {id:"a32",day:6,time:"11:30",end:"12:00",title:"大白兔 White Rabbit 旗舰店",cat:"쇼핑",cost:30000,maps:"大白兔 上海 旗舰店",note:"카라멜·유가 (쇼핑 리스트 6)",review:false},
+  {id:"a33",day:6,time:"12:00",end:"13:30",title:"점심",cat:"식사",cost:50000,maps:"",note:"",review:false},
+  {id:"a34",day:6,time:"13:30",end:"14:00",title:"Holiland 好利来 (디저트)",cat:"쇼핑",cost:25000,maps:"好利来 上海",note:"치즈케이크·수건케이크 (리스트 4)",review:false},
+  {id:"a35",day:6,time:"14:00",end:"15:00",title:"YiBenHaoSu 一本好酥 (티·쿠키)",cat:"쇼핑",cost:30000,maps:"一本好酥 上海",note:"쇼핑 리스트 2",review:false},
+  {id:"a36",day:6,time:"15:00",end:"16:00",title:"QingZhi (핸드크림)",cat:"쇼핑",cost:25000,maps:"QingZhi hand cream 上海",note:"쇼핑 리스트 3",review:true,
+    reviewReason:"'QingZhi 핸드크림'의 정확한 브랜드명·매장 위치를 확인하지 못했어요. 실제 정보로 수정이 필요합니다."},
+  {id:"a37",day:6,time:"17:00",end:"18:30",title:"大润发 RT-Mart (식료품)",cat:"쇼핑",cost:50000,maps:"大润发 上海",note:"따룬파 — 식료품 (쇼핑 리스트 7)",review:true,
+    reviewReason:"大润发(따룬파)는 대형마트라 관광보다 식료품 구매용이에요. 일정이 빠듯하면 빼고 공항 면세점·편의점으로 대체 가능."},
+  {id:"a38",day:6,time:"19:00",end:"20:30",title:"저녁 식사",cat:"식사",cost:50000,maps:"",note:"",review:false},
+  {id:"a39",day:6,time:"20:30",end:"21:00",title:"숙소 복귀 이동",cat:"이동",cost:15000,maps:"#HOTEL#",note:"",review:false},
+
+  {id:"a40",day:7,time:"10:00",end:"11:30",title:"마지막 카페 · 기념품",cat:"카페",cost:30000,maps:"",note:"",review:false,
+    menu:[
+      {n:"커피 한 잔 + 디저트",d:"공항 가기 전 가볍게 마무리.",p:"약 ¥40~60",ic:"coffee"},
+      {n:"막판 기념품",d:"못 산 간식·굿즈를 한 번에.",p:"—",ic:"cake"}
+    ]},
+  {id:"a41",day:7,time:"11:30",end:"12:30",title:"점심",cat:"식사",cost:40000,maps:"",note:"",review:false},
+  {id:"a42",day:7,time:"14:00",end:"15:00",title:"숙소 → 공항 이동",cat:"이동",cost:35000,maps:"上海浦东国际机场",note:"",review:false},
+  {id:"a43",day:0,time:"09:30",end:"11:30",title:"豫园 (예원)",cat:"관광",cost:15000,maps:"豫园 上海",note:"명·청대 고전 정원 + 위안 상가 거리(예원라오제). 정원 입장권 1인 약 ¥40, 상가 거리는 무료.",resv:"온라인 사전 예매 권장 ('上海豫园' 미니프로그램). 현장 매표도 가능.",review:false},
+  {id:"a44",day:0,time:"16:00",end:"18:00",title:"난징동루 보행자거리 (南京东路)",cat:"관광",cost:0,maps:"南京东路步行街 上海",note:"상하이 대표 보행자 쇼핑 거리. 와이탄(外滩)까지 도보로 이어집니다.",review:false},
+  {id:"a45",day:0,time:"18:30",end:"19:30",title:"황푸강 유람선 (黄浦江夜游)",cat:"관광",cost:50000,maps:"十六铺码头 黄浦江游览 上海",note:"야간 유람 약 45분~1시간, 와이탄·동방명주 야경. 十六铺码头 출발.",resv:"야간 유람선은 사전 예약 권장 (Trip.com·현지 플랫폼). 운항 약 18:00~21:00.",review:false}
+];}
+
+function freshState(){
+  return { startDate:"2026-07-16", numDays:7, hotel:"Qiuwang Hotel Shanghai", addLinda:false, activities:defaults() };
+}
+
+let state = load();
+let DAYS = [];
+let curDay = 1;
+let editId = null;
+const menuOpen = {};
+
+function load(){
+  const fs=freshState();
+  try{
+    const raw=localStorage.getItem(STORE);
+    if(raw){
+      const p=JSON.parse(raw);
+      if(p&&p.activities){
+        return {
+          startDate:p.startDate||fs.startDate,
+          numDays:p.numDays||fs.numDays,
+          hotel:p.hotel||fs.hotel,
+          addLinda:!!p.addLinda,
+          activities:p.activities
+        };
+      }
+    }
+  }catch(e){}
+  return fs;
+}
+function save(){ try{ localStorage.setItem(STORE,JSON.stringify(state)); }catch(e){} }
+
+function fmt(n){ return "₩"+Math.round(n).toLocaleString("ko-KR"); }
+function toMin(t){ const m=(t||"0:0").split(":"); return (+m[0])*60+(+m[1]||0); }
+function byTime(a,b){ return toMin(a.time)-toMin(b.time); }
+function actsOf(d){ return state.activities.filter(a=>a.day===d).sort(byTime); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function addDays(d,n){
+  const t=new Date(d+"T12:00:00"); t.setDate(t.getDate()+n);
+  return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");
+}
+function dowOf(d){ return ["일","월","화","수","목","금","토"][new Date(d+"T12:00:00").getDay()]; }
+function buildDays(){
+  const out=[];
+  for(let n=1;n<=state.numDays;n++){
+    const date=addDays(state.startDate,n-1);
+    const m=DAY_META[n]||{title:"Day "+n,zone:"huangpu"};
+    out.push({n:n,date:date,dow:dowOf(date),title:m.title,zone:m.zone});
+  }
+  return out;
+}
+function mapsOf(a){ return (a.maps==="#HOTEL#")?state.hotel:(a.maps||""); }
+function menuFor(a){
+  if(a.cat!=="식사"&&a.cat!=="카페") return null;
+  return (a.menu&&a.menu.length)?a.menu:(GENERIC_MENU[a.cat]||null);
+}
+
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),2600);
+}
+
+/* ---------- render ---------- */
+function renderHeader(){
+  const end=addDays(state.startDate,state.numDays-1);
+  document.getElementById("hdr-sub").textContent=
+    `${state.startDate} (${dowOf(state.startDate)}) – ${end} (${dowOf(end)}) · ${state.numDays}일 · 2인 기준 예산(원)`;
+  document.getElementById("f-start").value=state.startDate;
+  document.getElementById("f-days").value=state.numDays;
+  document.getElementById("f-hotel").value=state.hotel;
+  document.getElementById("f-linda").checked=!!state.addLinda;
+
+  const assigned=state.activities.filter(a=>a.day>=1&&a.day<=state.numDays);
+  const total=assigned.reduce((s,a)=>s+(+a.cost||0),0);
+  const rev=state.activities.filter(a=>a.review).length;
+  const pool=state.activities.filter(a=>a.day<1||a.day>state.numDays).length;
+  document.getElementById("stats").innerHTML=
+    `<div class="stat"><b>${state.numDays}일</b><span>여행 기간</span></div>`+
+    `<div class="stat"><b>${assigned.length}</b><span>일정 활동</span></div>`+
+    `<div class="stat"><b>${fmt(total)}</b><span>총예산 (2인)</span></div>`+
+    `<div class="stat"><b>${rev}</b><span>검토 추천</span></div>`+
+    `<div class="stat"><b>${pool}</b><span>풀 대기</span></div>`;
+}
+
+function renderTabs(){
+  document.getElementById("tabs").innerHTML=DAYS.map(d=>{
+    const a=actsOf(d.n), sum=a.reduce((s,x)=>s+(+x.cost||0),0);
+    return `<button class="tab ${d.n===curDay?'active':''}" data-day="${d.n}">
+      <div class="d">Day ${d.n} · ${d.date.slice(5)} (${d.dow})</div>
+      <div class="t">${esc(d.title)}</div>
+      <div class="c">${a.length}개 · ${fmt(sum)}</div></button>`;
+  }).join("");
+  document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{ curDay=+b.dataset.day; renderAll(); });
+}
+
+function renderTimeline(){
+  const d=DAYS[curDay-1];
+  document.getElementById("day-title").textContent=`Day ${d.n} — ${d.title}`;
+  const acts=actsOf(curDay);
+  const sum=acts.reduce((s,a)=>s+(+a.cost||0),0);
+  document.getElementById("day-note").textContent=
+    `${d.date} (${d.dow}) · 활동 ${acts.length}개 · 이 날 예산 ${fmt(sum)}`;
+  const tl=document.getElementById("timeline");
+  if(!acts.length){ tl.innerHTML=`<div class="empty">활동이 없습니다. 아래 버튼으로 추가하세요.</div>`; return; }
+  tl.innerHTML=acts.map(a=>{
+    const col=(CATS[a.cat]||{}).c||"#999";
+    const mq=mapsOf(a);
+    const map=mq?`<a class="maplink" target="_blank" rel="noopener"
+      href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mq)}">🗺 지도</a>`:"";
+    const menu=menuFor(a);
+    let menuHtml="";
+    if(menu){
+      const open=!!menuOpen[a.id];
+      menuHtml=`<button class="menu-toggle" data-menu="${a.id}">🍽 추천 메뉴 ${open?'▲':'▼'}</button>`;
+      if(open){
+        menuHtml+=`<div class="menu-panel">`+menu.map(m=>`
+          <div class="menu-item">
+            <span class="mi-ic">${foodIcon(m.ic)}</span>
+            <div><div class="mi-n">${esc(m.n)}</div>
+              <div class="mi-d">${esc(m.d)}</div>
+              <div class="mi-p">${esc(m.p)}</div></div>
+          </div>`).join("")+
+          `<div class="mi-foot">일러스트는 메뉴 이해용 그림입니다. 실제 매장 사진은 위 🗺 지도 링크에서 확인하세요.</div></div>`;
+      }
+    }
+    return `<div class="card ${a.review?'review':''}" style="border-left-color:${col}">
+      <div class="card-actions">
+        <button class="icon-btn" data-edit="${a.id}" title="편집">✎</button>
+        <button class="icon-btn" data-pool="${a.id}" title="풀로 보내기">✕</button>
+      </div>
+      <div class="row1"><span class="time">${a.time}</span><span class="title">${esc(a.title)}</span></div>
+      <div class="meta">
+        <span class="chip" style="background:${col}">${a.cat}</span>
+        <span>${a.time}–${a.end}</span>
+        <span class="cost">${fmt(a.cost)}</span>
+        ${map}
+        ${a.review?'<span class="chip warn">⚠ 검토</span>':''}
+        ${a.resv?(a.booked?'<span class="chip booked">✅ 예약완료</span>':'<span class="chip resv">📅 예약</span>'):''}
+      </div>
+      ${a.note?`<div class="note">📝 ${esc(a.note)}</div>`:''}
+      ${a.review&&a.reviewReason?`<div class="note">⚠ ${esc(a.reviewReason)}</div>`:''}
+      ${a.resv?`<div class="note" style="color:#5a4a8a">📅 ${esc(a.resv)}</div>`:''}
+      ${menuHtml}
+    </div>`;
+  }).join("");
+  tl.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openModal(b.dataset.edit));
+  tl.querySelectorAll("[data-pool]").forEach(b=>b.onclick=()=>toPool(b.dataset.pool));
+  tl.querySelectorAll("[data-menu]").forEach(b=>b.onclick=()=>{
+    menuOpen[b.dataset.menu]=!menuOpen[b.dataset.menu]; renderTimeline();
+  });
+}
+
+function renderZone(){
+  const z=DAYS[curDay-1].zone;
+  ZONES.forEach(zn=>{
+    document.getElementById("z-"+zn).setAttribute("class", zn===z?"zone-active":"zone-base");
+    ["t-"+zn,"t-"+zn+"2"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.setAttribute("class", zn===z?"zone-label on":"zone-label");
+    });
+  });
+  document.getElementById("zone-note").textContent=ZONE_NOTE[z]||"";
+  const pts=actsOf(curDay).map(mapsOf).filter(Boolean);
+  const hotel=state.hotel||"Shanghai";
+  let url;
+  if(pts.length){
+    url="https://www.google.com/maps/dir/?api=1&travelmode=transit"
+      +"&origin="+encodeURIComponent(hotel)
+      +"&destination="+encodeURIComponent(hotel)
+      +"&waypoints="+pts.map(encodeURIComponent).join("|");
+  }else{
+    url="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(hotel);
+  }
+  const rb=document.getElementById("route-btn");
+  rb.href=url;
+  rb.textContent=pts.length?`🗺 오늘 동선 구글 지도에서 보기 (${pts.length}곳)`:"🗺 구글 지도에서 숙소 보기";
+  document.getElementById("hotel-btn").href=
+    "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(hotel);
+}
+
+function renderBudget(){
+  const cont=document.getElementById("budget");
+  let rows="",grand=0;
+  DAYS.forEach(d=>{
+    const s=actsOf(d.n).reduce((x,a)=>x+(+a.cost||0),0); grand+=s;
+    rows+=`<div class="bud-row"><span class="day-link" data-d="${d.n}">Day ${d.n} · ${esc(d.title)}</span><span>${fmt(s)}</span></div>`;
+  });
+  rows+=`<div class="bud-row total"><span>총합 (2인)</span><span>${fmt(grand)}</span></div>`;
+  cont.innerHTML=rows;
+  cont.querySelectorAll(".day-link").forEach(el=>el.onclick=()=>{ curDay=+el.dataset.d; renderAll(); });
+
+  const byCat={};
+  state.activities.filter(a=>a.day>=1&&a.day<=state.numDays)
+    .forEach(a=>{ byCat[a.cat]=(byCat[a.cat]||0)+(+a.cost||0); });
+  const tot=Object.values(byCat).reduce((s,v)=>s+v,0)||1;
+  let bar="",leg="";
+  Object.keys(CATS).forEach(c=>{
+    if(!byCat[c]) return;
+    const pct=(byCat[c]/tot*100).toFixed(1);
+    bar+=`<div style="width:${pct}%;background:${CATS[c].c}" title="${c} ${fmt(byCat[c])}"></div>`;
+    leg+=`<span><i style="background:${CATS[c].c}"></i>${c} ${fmt(byCat[c])}</span>`;
+  });
+  document.getElementById("catbar").innerHTML=bar;
+  document.getElementById("catlegend").innerHTML=leg;
+}
+
+function renderPool(){
+  const pool=state.activities.filter(a=>a.day<1||a.day>state.numDays);
+  const cont=document.getElementById("pool");
+  if(!pool.length){ cont.innerHTML=`<div class="empty">풀이 비어 있습니다.</div>`; return; }
+  cont.innerHTML=pool.map(a=>{
+    const col=(CATS[a.cat]||{}).c||"#999";
+    return `<div class="pool-item">
+      <span class="chip" style="background:${col}">${a.cat}</span>
+      <span class="pi-title">${esc(a.title)}</span>
+      <span class="cost">${fmt(a.cost)}</span>
+      <button class="btn-ghost btn-sm" data-assign="${a.id}">날짜 배정</button>
+      <button class="icon-btn" data-del="${a.id}" title="삭제">🗑</button>
+    </div>`;
+  }).join("");
+  cont.querySelectorAll("[data-assign]").forEach(b=>b.onclick=()=>openModal(b.dataset.assign));
+  cont.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
+    if(confirm("이 장소를 완전히 삭제할까요?")){
+      state.activities=state.activities.filter(x=>x.id!==b.dataset.del);
+      save(); renderAll();
+    }
+  });
+}
+
+function renderReview(){
+  const revs=state.activities.filter(a=>a.review);
+  const cont=document.getElementById("review");
+  if(!revs.length){ cont.innerHTML=`<div class="empty">검토 항목이 없습니다.</div>`; return; }
+  cont.innerHTML=revs.map(a=>{
+    const where=(a.day>=1&&a.day<=state.numDays)?("Day "+a.day):"풀";
+    return `<div class="rev-item">
+      <div class="ri-t">${esc(a.title)} <span style="color:#9aa0a6;font-weight:400">· ${where}</span></div>
+      <div class="ri-r">${esc(a.reviewReason||"컨셉 겹침 검토 추천")}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderResv(){
+  const items=state.activities.filter(a=>a.resv);
+  const done=items.filter(a=>a.booked).length;
+  document.getElementById("resv-count").textContent=items.length?`(${done}/${items.length} 완료)`:"";
+  const cont=document.getElementById("resv-list");
+  if(!items.length){ cont.innerHTML=`<div class="empty">예약 항목이 없습니다.</div>`; return; }
+  cont.innerHTML=items.map(a=>{
+    const where=(a.day>=1&&a.day<=state.numDays)?("Day "+a.day):"풀";
+    return `<div class="chk-item ${a.booked?'done':''}">
+      <input type="checkbox" data-book="${a.id}" ${a.booked?'checked':''}>
+      <div><div class="chk-t ${a.booked?'done':''}">${esc(a.title)} <span style="color:#9aa0a6;font-weight:400">· ${where}</span></div>
+      <div class="chk-r">${esc(a.resv)}</div></div>
+    </div>`;
+  }).join("");
+  cont.querySelectorAll("[data-book]").forEach(b=>b.onchange=()=>{
+    const a=state.activities.find(x=>x.id===b.dataset.book);
+    if(a){ a.booked=b.checked; save(); renderResv(); renderTimeline(); renderHeader(); }
+  });
+}
+
+function renderAll(){
+  DAYS=buildDays();
+  if(curDay>state.numDays) curDay=state.numDays;
+  if(curDay<1) curDay=1;
+  renderHeader(); renderTabs(); renderTimeline();
+  renderZone(); renderBudget(); renderPool(); renderResv(); renderReview();
+}
+
+/* ---------- actions ---------- */
+function toPool(id){
+  const a=state.activities.find(x=>x.id===id); if(!a) return;
+  a.day=0; save(); renderAll(); toast("풀로 옮겼습니다");
+}
+
+function openModal(id){
+  editId=id;
+  const a=id?state.activities.find(x=>x.id===id):null;
+  document.getElementById("modal-title").textContent=a?"활동 편집":"활동 추가";
+  const daySel=document.getElementById("m-day");
+  daySel.innerHTML=`<option value="0">풀 (미배정)</option>`+
+    DAYS.map(d=>`<option value="${d.n}">Day ${d.n} · ${esc(d.title)}</option>`).join("");
+  document.getElementById("m-cat").innerHTML=Object.keys(CATS).map(c=>`<option>${c}</option>`).join("");
+  document.getElementById("m-title").value=a?a.title:"";
+  daySel.value=a?Math.min(a.day,state.numDays):curDay;
+  document.getElementById("m-cat").value=a?a.cat:"관광";
+  document.getElementById("m-time").value=a?a.time:"10:00";
+  document.getElementById("m-end").value=a?a.end:"11:00";
+  document.getElementById("m-cost").value=a?a.cost:0;
+  document.getElementById("m-maps").value=a?(a.maps==="#HOTEL#"?state.hotel:(a.maps||"")):"";
+  document.getElementById("m-note").value=a?(a.note||""):"";
+  document.getElementById("modal-bg").classList.add("show");
+}
+function closeModal(){ document.getElementById("modal-bg").classList.remove("show"); editId=null; }
+
+function saveModal(){
+  const title=document.getElementById("m-title").value.trim();
+  if(!title){ toast("제목을 입력하세요"); return; }
+  const data={
+    title:title,
+    day:+document.getElementById("m-day").value,
+    cat:document.getElementById("m-cat").value,
+    time:document.getElementById("m-time").value.trim()||"10:00",
+    end:document.getElementById("m-end").value.trim()||"11:00",
+    cost:+document.getElementById("m-cost").value||0,
+    maps:document.getElementById("m-maps").value.trim(),
+    note:document.getElementById("m-note").value.trim()
+  };
+  if(editId){ Object.assign(state.activities.find(x=>x.id===editId),data); }
+  else{ state.activities.push(Object.assign({id:"u"+Date.now(),review:false},data)); }
+  save(); closeModal();
+  if(data.day>=1&&data.day<=state.numDays) curDay=data.day;
+  renderAll(); toast("저장되었습니다");
+}
+
+function autoAssign(){
+  const pool=state.activities.filter(a=>a.day<1||a.day>state.numDays);
+  if(!pool.length){ toast("풀이 비어 있습니다"); return; }
+  pool.forEach(a=>{
+    let best=1,min=1e9;
+    DAYS.forEach(d=>{ const c=actsOf(d.n).length; if(c<min){min=c;best=d.n;} });
+    a.day=best; a.time=a.time||"15:00"; a.end=a.end||"16:00";
+  });
+  save(); renderAll(); toast(pool.length+"개를 한가한 날에 배정했습니다");
+}
+
+async function exportCalendar(){
+  if(!window.cowork||!window.cowork.callMcpTool){
+    alert("캘린더 내보내기는 Cowork 앱에서 이 아티팩트를 열었을 때 동작합니다.");
+    return;
+  }
+  const acts=state.activities.filter(a=>a.day>=1&&a.day<=state.numDays)
+    .sort((a,b)=>a.day-b.day||byTime(a,b));
+  if(!acts.length){ toast("내보낼 일정이 없습니다"); return; }
+  const withLinda=!!state.addLinda;
+  if(!confirm(`'여행' 캘린더에 ${acts.length}개 일정을 추가합니다.`
+    +(withLinda?`\n${LINDA} 님을 각 일정 참석자로 추가합니다.`:"")+"\n계속할까요?")) return;
+  const btn=document.getElementById("btn-export");
+  btn.disabled=true;
+  let ok=0,fail=0;
+  for(let i=0;i<acts.length;i++){
+    const a=acts[i], d=DAYS[a.day-1].date;
+    btn.textContent=`내보내는 중… ${i+1}/${acts.length}`;
+    const args={
+      calendarId:CAL_ID,
+      summary:"🇨🇳 "+a.title,
+      start:d+"T"+a.time+":00",
+      end:d+"T"+a.end+":00",
+      timeZone:"Asia/Shanghai",
+      location:mapsOf(a),
+      description:`상하이 여행 · ${a.cat} · 예상비용 ${fmt(a.cost)} (2인)`+(a.note?"\n"+a.note:"")
+    };
+    if(withLinda){ args.attendees=[{email:LINDA}]; args.sendUpdates="all"; }
+    try{ await window.cowork.callMcpTool("mcp__gcal-local__create-event",args); ok++; }
+    catch(e){ fail++; }
+  }
+  btn.disabled=false;
+  btn.textContent="📅 구글 캘린더로 내보내기";
+  toast(`완료 — 추가 ${ok}건${fail?`, 실패 ${fail}건`:""}`);
+}
+
+/* ---------- settings ---------- */
+function onStartChange(){
+  const v=document.getElementById("f-start").value;
+  if(v){ state.startDate=v; save(); renderAll(); toast("출발일을 바꿨습니다"); }
+}
+function onDaysChange(){
+  let v=Math.max(2,Math.min(14,parseInt(document.getElementById("f-days").value,10)||7));
+  if(v<state.numDays){
+    let moved=0;
+    state.activities.forEach(a=>{ if(a.day>v){ a.day=0; moved++; }});
+    if(moved) toast(moved+"개 활동을 풀로 옮겼습니다");
+  }
+  state.numDays=v; save(); renderAll();
+}
+function onHotelChange(){
+  state.hotel=document.getElementById("f-hotel").value.trim()||"Shanghai";
+  save(); renderAll(); toast("숙소를 반영했습니다");
+}
+
+/* ---------- wire up ---------- */
+document.getElementById("f-start").onchange=onStartChange;
+document.getElementById("f-days").onchange=onDaysChange;
+document.getElementById("f-hotel").onchange=onHotelChange;
+document.getElementById("f-linda").onchange=e=>{ state.addLinda=e.target.checked; save(); };
+document.getElementById("btn-add").onclick=()=>openModal(null);
+document.getElementById("btn-add-day").onclick=()=>openModal(null);
+document.getElementById("btn-pool-add").onclick=()=>{ openModal(null); document.getElementById("m-day").value="0"; };
+document.getElementById("btn-autoassign").onclick=autoAssign;
+document.getElementById("btn-export").onclick=exportCalendar;
+document.getElementById("btn-reset").onclick=()=>{
+  if(confirm("모든 변경을 버리고 초안으로 되돌릴까요? (출발일·일수·숙소 포함)")){
+    state=freshState(); curDay=1; save(); renderAll(); toast("초안으로 되돌렸습니다");
+  }
+};
+document.getElementById("m-cancel").onclick=closeModal;
+document.getElementById("m-save").onclick=saveModal;
+document.getElementById("modal-bg").onclick=e=>{ if(e.target.id==="modal-bg") closeModal(); };
+
+renderAll();
+</script>
+</body>
+</html>
