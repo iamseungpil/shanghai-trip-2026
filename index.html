@@ -1,4 +1,16 @@
-<!doctype html>
+<!doctype html><script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Shanghai Trip 2026",
+  "schemaVersion": 1,
+  "description": "7/16~ 상하이 여행 일정 보드. 출발일·일수·숙소 편집, 권역 지도+구글 지도 동선, 2인 예산(원), 식사·카페 추천 메뉴, 겹침 검토, '여행' 캘린더 내보내기(참석자 추가 옵션).",
+  "mcpTools": [
+    "mcp__gcal-local__create-event"
+  ],
+  "mcpServerNames": [
+    "gcal-local"
+  ]
+}
+</script>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -68,6 +80,15 @@ button{ font-family:inherit; cursor:pointer; border:none; border-radius:9px; fon
 .chk-t{ font-weight:600; font-size:13px; }
 .chk-t.done{ text-decoration:line-through; color:#9aa0a6; }
 .chk-r{ font-size:12px; color:#5a4a8a; margin-top:2px; }
+.prep-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:7px; }
+@media(max-width:680px){ .prep-grid{ grid-template-columns: 1fr; } }
+.prep-item{ display:flex; gap:9px; align-items:flex-start; border:1px solid #e6e6e2;
+  border-radius:9px; padding:8px 10px; background:#fafafa; cursor:pointer; }
+.prep-item.done{ background:#f3f7f3; }
+.prep-item input{ margin-top:2px; width:16px; height:16px; flex:0 0 auto; }
+.prep-n{ font-weight:600; font-size:13px; }
+.prep-n.done{ text-decoration:line-through; color:#9aa0a6; }
+.prep-d{ font-size:12px; color:#6b7280; margin-top:1px; }
 .cost{ font-weight:700; color:#1f2328; }
 .maplink{ color:#2f6fb5; text-decoration:none; }
 .maplink:hover{ text-decoration:underline; }
@@ -159,6 +180,18 @@ svg.zonemap{ width:100%; height:auto; display:block; border-radius:10px; }
       <button class="btn-ghost" id="btn-add">➕ 활동 추가</button>
       <button class="btn-ghost" id="btn-reset">↺ 초안으로 초기화</button>
     </div>
+  </div>
+
+  <div class="panel" style="margin-top:14px">
+    <h2>✈️ 출국 전 준비물 <span id="prep-count" style="font-weight:400;color:#9aa0a6;font-size:11px"></span></h2>
+    <div class="h-note">상하이 도착 전 챙길 항목입니다. 완료하면 체크하세요 — 상태는 저장됩니다.</div>
+    <div id="prep-list" class="prep-grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>✈️ 항공권 예약 <span style="font-weight:400;color:#9aa0a6;font-size:11px">인천 ↔ 푸둥 · 7/19~7/27</span></h2>
+    <div class="h-note">아래 버튼이 <b>실제 예약 페이지</b>를 새 탭으로 엽니다. 요금·좌석은 실시간으로 바뀝니다.</div>
+    <div id="flights"></div>
   </div>
 
   <div class="tabs" id="tabs"></div>
@@ -264,7 +297,7 @@ svg.zonemap{ width:100%; height:auto; display:block; border-radius:10px; }
 "use strict";
 const CAL_ID = "eabae536d94e015b89bd8f50892ef782c154693fe14f5b7104db0e516750321a@group.calendar.google.com";
 const LINDA  = "linda010706@gmail.com";
-const STORE  = "shanghai_trip_2026_v3";
+const STORE  = "shanghai_trip_2026_v6";
 
 const DAY_META = {
   1:{title:"도착 · 신천지", zone:"huangpu"},
@@ -273,7 +306,9 @@ const DAY_META = {
   4:{title:"西岸 · 쉬후이", zone:"westbund"},
   5:{title:"차 · 카페", zone:"huangpu"},
   6:{title:"쇼핑 정리", zone:"jingan"},
-  7:{title:"마무리 · 출발", zone:"huangpu"}
+  7:{title:"예원 · 황푸강", zone:"huangpu"},
+  8:{title:"휴식 · 마지막 만찬", zone:"huangpu"},
+  9:{title:"출국", zone:"huangpu"}
 };
 const ZONES = ["jingan","fc","huangpu","westbund","pudong"];
 const ZONE_NOTE = {
@@ -287,6 +322,17 @@ const CATS = {
   "관광":{c:"#2f6fb5"}, "식사":{c:"#d98324"}, "카페":{c:"#8a6d4b"},
   "쇼핑":{c:"#c2548a"}, "스파":{c:"#1f9a8f"}, "이동":{c:"#7a8290"}, "휴식":{c:"#5a9e58"}
 };
+
+const PREP = [
+  {id:"esim",      n:"eSIM / USIM 준비",       d:"중국은 Google·Instagram·KakaoTalk이 차단돼요. 한국 통신사 데이터 로밍(우회 가능)이나 중국·홍콩 eSIM + VPN 조합으로 (Saily·Klook·KnowRoaming 등)."},
+  {id:"vpn",       n:"VPN 앱 미리 설치",       d:"중국 SIM·Wi-Fi에서 차단 사이트 접속하려면 VPN 필수. 중국 안에서는 앱 다운로드가 막히니 출발 전에 깔아두세요."},
+  {id:"pay",       n:"알리페이/위챗페이 설정", d:"현지에선 모바일 결제가 거의 기본. 한국에서 카드 등록·국제 인증 미리 (Alipay Tour Pass 등)."},
+  {id:"passport",  n:"여권 유효기간 6개월+",   d:"입국일 기준 잔여 유효기간 6개월 이상 권장."},
+  {id:"visa",      n:"무비자 입국 조건 확인",  d:"한국 여권 소지자 중국 무비자(2024년부터 시행 중) 기간·조건 확인."},
+  {id:"adapter",   n:"콘센트 어댑터",          d:"중국 콘센트는 타입 A/I 중심. 한국 C 플러그는 호환 안 되는 경우가 많아 멀티 어댑터 권장."},
+  {id:"booking",   n:"호텔 예약 확인서",       d:"입국 심사 시 요구될 수 있음. PDF 출력 또는 스크린샷 저장."},
+  {id:"insurance", n:"여행자보험",             d:"단기 보험이라도 가입 권장 (분실·의료 대비)."}
+];
 
 /* ---- food illustrations (inline SVG, no network needed) ---- */
 const ICON = {
@@ -314,15 +360,37 @@ const GENERIC_MENU = {
   ]
 };
 
+/* ---- 예약 페이지 링크 (활동 id 기준) ---- */
+const RESV_URL = {
+  a14:"https://www.klook.com/ko/activity/2128-disney-resort-shang-hai/",             // 상하이 디즈니랜드
+  a45:"https://www.klook.com/ko/activity/3973-hangpu-river-cruise-shanghai/",         // 황푸강 유람선
+  a43:"https://www.klook.com/ko/activity/16738-yu-garden-admission-ticket-shanghai/", // 예원
+  a19:"https://www.wbmshanghai.com/en/",                                              // 西岸미술관 (공식·티켓은 WeChat '西岸美术馆')
+  a9 :"https://www.dianping.com/search/keyword/1/0_"+encodeURIComponent("提督臻选TIDU"),    // 提督 Tidu 북경오리 (大众点评)
+  a28:"https://www.dianping.com/search/keyword/1/0_"+encodeURIComponent("隐溪茶馆"),         // 隐溪茶馆 (大众点评)
+  a22:"https://www.dianping.com/search/keyword/1/0_"+encodeURIComponent("漾SPACE汤泉生活"),  // 漾SPACE 스파 (大众点评)
+  a29:"https://www.dianping.com/search/keyword/1/0_"+encodeURIComponent("红盔甲小龙虾"),     // 마라룽샤 (大众点评)
+  a50:"https://www.dianping.com/search/keyword/1/0_"+encodeURIComponent("海底捞火锅")        // 훠궈 (大众点评)
+};
+/* ---- 항공권 예약 링크 (인천 ↔ 푸둥, 7/19~7/27) ---- */
+const FLIGHTS = [
+  {label:"인천 ICN → 푸둥 PVG · 직항 (추천)",
+   desc:"7/18(토) 12:35→13:45 · 귀국 7/26(일) 08:05→11:10 · 1인 약 ₩49만~ (2인은 ×2) · 요금 변동",
+   url:"https://on.kiwi.com/DYmo21"},
+  {label:"전체 항공권 비교 (스카이스캐너)",
+   desc:"날짜·항공사 자유롭게 비교 — ICN↔PVG 2026/7/18~7/26",
+   url:"https://www.skyscanner.co.kr/transport/flights/icn/pvg/260718/260726/"}
+];
+
 function defaults(){ return [
   {id:"a1",day:1,time:"14:00",end:"16:00",title:"공항 → 숙소 이동",cat:"이동",cost:30000,maps:"上海浦东国际机场",note:"입국·짐 정리",review:false},
   {id:"a2",day:1,time:"16:30",end:"17:30",title:"숙소 체크인 · 휴식",cat:"휴식",cost:0,maps:"#HOTEL#",note:"",review:false},
   {id:"a3",day:1,time:"17:30",end:"19:00",title:"신천지 산책 (헌지우이치엔 일대)",cat:"관광",cost:0,maps:"上海新天地",note:"신천지 헌지우이치엔",review:false},
-  {id:"a4",day:1,time:"19:00",end:"21:00",title:"신천지 저녁 식사",cat:"식사",cost:60000,maps:"新天地 上海 餐厅",note:"",review:false,
+  {id:"a4",day:1,time:"19:00",end:"21:00",title:"很久以前 양꼬치 (헌지우이치엔)",cat:"식사",cost:60000,maps:"很久以前 羊肉串 上海 新天地",note:"도착일 저녁 — 신천지 도보권. 很久以前(羊肉串) 신천지/윈난난루점 등.",review:false,
     menu:[
-      {n:"샤오롱바오 小笼包",d:"신천지 일대 딤섬집의 육즙 만두.",p:"약 ¥50~70",ic:"dumpling"},
-      {n:"훙사오러우 红烧肉",d:"간장에 졸인 삼겹살 — 상하이 본고장 메뉴.",p:"약 ¥60~80",ic:"rice"},
-      {n:"마란터우 무침 马兰头",d:"상하이식 봄나물 무침, 느끼함을 잡아줍니다.",p:"약 ¥30",ic:"salad"}
+      {n:"양꼬치 羊肉串",d:"很久以前 시그니처 — 직접 구워 먹는 양꼬치.",p:"꼬치당 약 ¥9~",ic:"rice"},
+      {n:"양갈비·소고기 꼬치",d:"양고기 외 다양한 꼬치 구성.",p:"약 ¥15~",ic:"salad"},
+      {n:"샤오롱바오 (대안)",d:"가볍게 먹고 싶으면 인근 딤섬집의 육즙 만두.",p:"약 ¥50~70",ic:"dumpling"}
     ]},
 
   {id:"a5",day:2,time:"10:00",end:"11:30",title:"HARMAY 话梅 (武康路)",cat:"쇼핑",cost:100000,maps:"HARMAY 话梅 武康路 上海",note:"화장품 미니어처. 매장은 2021년 安福路→武康路로 이전 (옛 자리엔 introlemons 레몬티 카페).",review:false},
@@ -337,8 +405,8 @@ function defaults(){ return [
       {n:"국수·면 요리",d:"가볍게 먹고 쇼핑 동선을 이어가기 좋습니다.",p:"약 ¥40~60",ic:"noodle"}
     ]},
   {id:"a8",day:2,time:"14:00",end:"15:30",title:"To Summer 观夏 (观夏闲庭)",cat:"쇼핑",cost:80000,maps:"观夏 To Summer 湖南路 上海",note:"동방 향수 편집숍. 상하이 플래그십 '观夏闲庭'은 후난루 111호 (프랑스 조계).",review:false},
-  {id:"a9",day:2,time:"18:00",end:"20:00",title:"提督 Tidu (TIDU RESERVE) 베이징덕",cat:"식사",cost:150000,maps:"提督臻选 TIDU RESERVE 前滩太古里 上海",resv:"고급 京菜 레스토랑 — 사전 예약 강력 권장. 大众点评 앱·전화로 예약하세요.",note:"创新 京菜(베이징 요리) 레스토랑. 인당 약 ¥395.",review:true,
-    reviewReason:"提督(TIDU RESERVE)은 베이징덕 전문 京菜 레스토랑이고 前滩太古里(푸둥)에 있어요. Day 2(프랑스 조계)와 권역이 달라 이동이 깁니다 — 디즈니랜드 가는 날(Day 3) 저녁 등으로 옮기는 걸 검토하세요.",
+  {id:"a9",day:2,time:"18:00",end:"20:00",title:"提督 Tidu (북경오리·TIDU RESERVE)",cat:"식사",cost:150000,maps:"提督臻选 TIDU RESERVE 前滩太古里 上海",resv:"인기 京菜 — 사전 예약 강력 권장. 大众点评 앱·전화로 예약.",note:"북경오리 一鸭三吃. 前滩太古里(푸둥)이라 프랑스 조계서 강 건너 — 이날의 특별 디너로 이동시간 감안. 인당 약 ¥395.",review:false,
+    reviewReason:"",
     menu:[
       {n:"이야싼츠 一鸭三吃",d:"오리 한 마리를 세 가지로 내는 Tidu 시그니처 코스.",p:"인당 약 ¥395",ic:"duck"},
       {n:"우웨이 캐비어 오리껍질",d:"8년산 캐비어를 올린 바삭 오리껍질, 다섯 식감.",p:"코스 포함",ic:"fish"},
@@ -363,42 +431,53 @@ function defaults(){ return [
   {id:"a17",day:3,time:"19:00",end:"20:00",title:"디즈니 기념품",cat:"쇼핑",cost:50000,maps:"",note:"",review:false},
   {id:"a18",day:3,time:"20:30",end:"21:15",title:"숙소 복귀 이동",cat:"이동",cost:12000,maps:"#HOTEL#",note:"",review:false},
 
-  {id:"a19",day:4,time:"10:30",end:"12:30",title:"上海西岸美术馆 (웨스트번드 미술관)",cat:"관광",cost:75000,maps:"西岸美术馆 上海 龙腾大道2600号",resv:"예약 필수는 아님 — '西岸生活' 미니프로그램 온라인 구매 또는 현장 구매. 무료 도슨트(수·토 14시)는 예약 필요.",note:"2층 전시 입장권 1인 약 ¥198, 1층은 무료. 월요일 휴관 (Day 4가 일요일이면 정상 운영).",review:false},
+  {id:"a19",day:0,time:"10:30",end:"12:30",title:"上海西岸美术馆 (웨스트번드 미술관)",cat:"관광",cost:75000,maps:"西岸美术馆 上海 龙腾大道2600号",resv:"예약 필수는 아님 — '西岸生活' 미니프로그램 온라인 구매 또는 현장 구매. 무료 도슨트(수·토 14시)는 예약 필요.",note:"풀 대기 — Day4에 배정 가능. 2층 전시 입장권 1인 약 ¥198, 1층은 무료. 월요일 휴관 (Day4 화요일은 정상 운영).",review:false},
   {id:"a20",day:4,time:"12:30",end:"14:00",title:"西岸 강변 점심",cat:"식사",cost:45000,maps:"西岸 上海 餐厅",note:"",review:false,
     menu:[
       {n:"미술관 카페 · 강변 레스토랑",d:"西岸 강변 데크의 브런치/카페.",p:"2인 약 ¥220",ic:"salad"},
       {n:"가벼운 면 요리",d:"오후 일정을 위해 가볍게.",p:"약 ¥50",ic:"noodle"}
     ]},
-  {id:"a21",day:4,time:"14:30",end:"16:00",title:"쉬후이구 차오시베이루 158호",cat:"쇼핑",cost:40000,maps:"漕溪北路158号 上海",note:"📍徐汇区 漕溪北路158号",review:true,
-    reviewReason:"徐汇区 漕溪北路158号 — 이 주소에 무엇이 있는지(매장·방문 목적)를 확인하지 못했어요. 임시로 쇼핑으로 분류했습니다."},
-  {id:"a22",day:4,time:"16:30",end:"19:00",title:"漾·SPACE 汤泉生活 (온천·스파)",cat:"스파",cost:160000,maps:"漾SPACE汤泉生活 陆家嘴 上海",note:"입장 1인 약 ¥435 (패키지에 따라 ¥298~). 과일·음료 무료 제공.",resv:"성수기 혼잡 — 방문 전 예약 권장.",review:true,
-    reviewReason:"漾·SPACE汤泉生活은 陆家嘴(푸둥 浦电路)에 있어요. Day 4 권역(西岸·쉬후이)과 강 건너편이라 이동시간을 고려하세요."},
-  {id:"a23",day:4,time:"19:30",end:"21:00",title:"저녁 식사",cat:"식사",cost:55000,maps:"",note:"",review:false},
+  {id:"a21",day:0,time:"14:00",end:"16:00",title:"徐家汇书院 (쉬자후이 도서관·网红 도서관)",cat:"관광",cost:0,maps:"徐家汇书院 漕溪北路158号 上海",note:"풀 대기 — Day4에 배정 가능. David Chipperfield 설계, 2023 개관(漕溪北路158호). 무료. 光启之门 3D 포토존, 2층 발코니서 쉬자후이 성당 조망, 별빛천장 열람실. 9:00~17:00(16:30 입관 마감), 월요일 휴관 — Day4(화)는 정상.",resv:"무료지만 입관 예약제 — 주말은 빨리 마감, 평일은 여유. '徐家汇书院' WeChat 미니프로그램으로 예약.",review:false},
+  {id:"a22",day:8,time:"14:30",end:"17:30",title:"漾·SPACE 汤泉生活 (온천·스파)",cat:"스파",cost:160000,maps:"漾SPACE汤泉生活 陆家嘴 上海",note:"휴식일 메인 — 浦电路 57호(푸둥, 19호선 潍坊路). 24시간 영업. 온천탕·스파·족욕 + 과일바·식사·휴게 라운지. 입장 ¥299~, 인당 약 ¥323~435.",resv:"성수기 혼잡 — 大众点评으로 방문 전 예약/줄서기 권장.",review:false,
+    reviewReason:""},
+  {id:"a23",day:4,time:"19:30",end:"21:00",title:"青花椒秘制烤鱼 (카오위·光启城店)",cat:"식사",cost:75000,maps:"青花椒秘制烤鱼 光启城 上海",note:"徐汇 必吃榜 카오위. 西岸·쉬후이 권역과 같은 동네. 대안: 云中鱼蒸汽石锅鱼.",review:false,
+    menu:[
+      {n:"칭화자오 烤鱼",d:"마라·산초 베이스의 사천식 통생선 구이.",p:"2인 약 ¥180",ic:"fish"},
+      {n:"사이드 꼬치·채소",d:"카오위에 곁들이는 꼬치·두부·채소.",p:"약 ¥50",ic:"salad"}
+    ]},
   {id:"a24",day:4,time:"21:00",end:"21:30",title:"숙소 복귀 이동",cat:"이동",cost:15000,maps:"#HOTEL#",note:"",review:false},
 
   {id:"a25",day:5,time:"10:30",end:"12:00",title:"布兰兔的植物庄园 (田子坊店)",cat:"카페",cost:35000,maps:"布兰兔的植物庄园 田子坊 上海",note:"식물 과일차 + 토끼 테마 기념품. 上海 田子坊(黄浦区)에 지점 있음.",review:true,
-    reviewReason:"리스트엔 칭다오 점이 적혀 있었지만 上海 田子坊점이 있어 방문 가능합니다. 다만 teastone·隐溪茶馆과 함께 '차·음료' 컨셉이 하루에 겹쳐요 — 셋 중 일부만 추천.",
+    reviewReason:"上海 田子坊점 방문 가능. 같은 날 隐溪茶馆과 '차' 컨셉이 겹치니 한 곳은 가볍게 즐겨도 좋아요.",
     menu:[
       {n:"식물 과일차 植物果茶",d:"布兰兔 시그니처 — 화사한 빛깔의 과일차.",p:"약 ¥45",ic:"tea"},
       {n:"토끼 테마 디저트",d:"빈티지 찻잔에 담겨 나오는 디저트·굿즈.",p:"약 ¥30~",ic:"cake"}
     ]},
-  {id:"a26",day:5,time:"12:00",end:"13:30",title:"점심",cat:"식사",cost:45000,maps:"",note:"",review:false},
-  {id:"a27",day:5,time:"14:00",end:"15:30",title:"tea'stone 신식 찻집 (신천지)",cat:"카페",cost:30000,maps:"tea'stone 新天地 上海",note:"상하이 1호점은 신천지. 차 1인 1주전자, 리필 없음.",review:true,
-    reviewReason:"신식 찻집 — 隐溪茶馆과 컨셉이 겹쳐요. 둘 중 하나만 가도 충분합니다.",
+  {id:"a26",day:5,time:"12:00",end:"13:30",title:"裕兴记·蟹粉世家 蟹黄面 (게살국수)",cat:"식사",cost:50000,maps:"裕兴记 蟹粉世家 日月光 上海",note:"田子坊·打浦桥 인근 — Day5 동선과 일치. 대안: 沈大成(난징동루 1875 노포).",review:false,
+    menu:[
+      {n:"蟹黄面 게살국수",d:"게살·게장을 듬뿍 올린 상하이 명물 면.",p:"약 ¥88~",ic:"noodle"},
+      {n:"蟹粉小笼 게살 샤오롱바오",d:"게살 육즙 만두 곁들임.",p:"약 ¥60",ic:"dumpling"}
+    ]},
+  {id:"a27",day:7,time:"14:00",end:"15:30",title:"tea'stone 신식 찻집 (신천지)",cat:"카페",cost:30000,maps:"tea'stone 新天地 上海",note:"상하이 1호점은 신천지 — 예원·난징동루와 같은 황푸 권역. 차 1인 1주전자, 리필 없음.",review:false,
+    reviewReason:"",
     menu:[
       {n:"화견미인 花见美人",d:"인기 1위 모란 향 차. 비스킷 2개 포함.",p:"¥65 / 주전자",ic:"tea"},
       {n:"라오바이차 老白茶",d:"숙성 백차. 차 가격대 ¥38~168.",p:"¥99 / 주전자",ic:"tea"},
       {n:"운영 방식",d:"1인 1주전자, 리필 없음 — 2인이면 2주전자.",p:"2인 약 ¥130",ic:"soup"}
     ]},
-  {id:"a28",day:5,time:"15:30",end:"17:00",title:"隐溪茶馆 (은계차관)",cat:"카페",cost:60000,maps:"隐溪茶馆 上海",note:"전통 신중식 찻집. 지점 다수 (남징시루·쉬자후이 등).",resv:"인기 찻집 — 방문 시간대 예약 권장. 2인 애프터눈티 세트는 사전 예약.",review:true,
-    reviewReason:"전통 찻집 — tea'stone과 겹침. 둘 중 하나만 추천. 오전(9:30~13시)·저녁 시간대가 인당 약 ¥120로 더 저렴해요.",
+  {id:"a28",day:5,time:"15:30",end:"17:00",title:"隐溪茶馆 (은계차관)",cat:"카페",cost:60000,maps:"隐溪茶馆 上海",note:"전통 신중식 찻집. 지점 다수 (남징시루·쉬자후이 등). 오전·저녁 시간대가 인당 약 ¥120로 저렴.",resv:"인기 찻집 — 방문 시간대 예약 권장. 2인 애프터눈티 세트는 사전 예약.",review:false,
+    reviewReason:"",
     menu:[
       {n:"더블 애프터눈티 세트",d:"2인 세트 — 차 + 과일 + 디저트 구성.",p:"2인 약 ¥279",ic:"tea"},
       {n:"차 선택",d:"생푸얼·홍차·모리룽주·리치홍차 중 선택.",p:"세트 포함",ic:"tea"},
       {n:"시간대 팁",d:"오전·저녁 시간대는 인당 약 ¥120로 저렴.",p:"—",ic:"soup"}
     ]},
-  {id:"a29",day:5,time:"17:30",end:"19:00",title:"저녁 식사",cat:"식사",cost:50000,maps:"",note:"",review:false},
-  {id:"a30",day:5,time:"19:00",end:"19:30",title:"숙소 복귀 이동",cat:"이동",cost:15000,maps:"#HOTEL#",note:"",review:false},
+  {id:"a29",day:5,time:"18:00",end:"20:00",title:"红盔甲 小龙虾 (홍쿠이지아·人民广场店)",cat:"식사",cost:80000,maps:"红盔甲 小龙虾 人民广场 金陵东路 上海",note:"7월이 제철. 黄浦 金陵东路500호=大世界(人民广场 남쪽, 신천지 바로 북쪽) — 신천지서 도보 약 15분·직선 ~1km. 创建 2015, 3년 연속 必吃榜, 18종 맛. 영업 16:30~02:00(야식 OK).",resv:"성수기 주말 혼잡 — 大众点评으로 미리 줄서기/예약 권장.",review:false,
+    menu:[
+      {n:"十三香 小龙虾",d:"红盔甲 시그니처 — 십삼향 양념 민물가재.",p:"근당 약 ¥128~",ic:"rice"},
+      {n:"冰镇 小龙虾",d:"차갑게 즐기는 빙쩐 룽샤 + 麻辣·咸蛋黄 등 18종 맛.",p:"맛별 상이",ic:"soup"}
+    ]},
+  {id:"a30",day:5,time:"20:00",end:"20:30",title:"숙소 복귀 이동",cat:"이동",cost:15000,maps:"#HOTEL#",note:"",review:false},
 
   {id:"a31",day:6,time:"10:30",end:"11:30",title:"MINISO LAND (키링·인형)",cat:"쇼핑",cost:40000,maps:"MINISO LAND 南京路 上海",note:"쇼핑 리스트 5",review:false},
   {id:"a32",day:6,time:"11:30",end:"12:00",title:"大白兔 White Rabbit 旗舰店",cat:"쇼핑",cost:30000,maps:"大白兔 上海 旗舰店",note:"카라멜·유가 (쇼핑 리스트 6)",review:false},
@@ -412,20 +491,39 @@ function defaults(){ return [
   {id:"a38",day:6,time:"19:00",end:"20:30",title:"저녁 식사",cat:"식사",cost:50000,maps:"",note:"",review:false},
   {id:"a39",day:6,time:"20:30",end:"21:00",title:"숙소 복귀 이동",cat:"이동",cost:15000,maps:"#HOTEL#",note:"",review:false},
 
-  {id:"a40",day:7,time:"10:00",end:"11:30",title:"마지막 카페 · 기념품",cat:"카페",cost:30000,maps:"",note:"",review:false,
+  {id:"a40",day:9,time:"09:00",end:"11:00",title:"휴식 · 자유시간",cat:"휴식",cost:0,maps:"#HOTEL#",note:"짐 정리·체크아웃 준비.",review:false},
+  {id:"a41",day:9,time:"11:00",end:"12:30",title:"점심 · 마지막 식사",cat:"식사",cost:45000,maps:"",note:"여유롭게 마지막 식사",review:false},
+  {id:"a42",day:9,time:"13:30",end:"15:00",title:"숙소 → 공항 이동",cat:"이동",cost:35000,maps:"上海浦东国际机场",note:"",review:false},
+  {id:"a46",day:7,time:"12:00",end:"14:00",title:"南翔馒头店 샤오롱바오 점심 · 탕후루 (예원)",cat:"식사",cost:45000,maps:"南翔馒头店 豫园 上海",note:"예원 본 뒤 바로 — 南翔馒头店 예원 본점(1900년 개업, 예원 라오제 안). 1층 테이크아웃 줄은 길고, 위층 좌석은 회전 빠른 편. 후식으로 탕후루.",resv:"성수기 대기 김 — 식사 시간 살짝 비껴(11:30 전 또는 13시 후) 가면 수월.",review:false,
     menu:[
-      {n:"커피 한 잔 + 디저트",d:"공항 가기 전 가볍게 마무리.",p:"약 ¥40~60",ic:"coffee"},
-      {n:"막판 기념품",d:"못 산 간식·굿즈를 한 번에.",p:"—",ic:"cake"}
+      {n:"蟹粉小笼 게살 샤오롱바오",d:"南翔 시그니처 — 게살·게장 육즙 만두.",p:"약 ¥55~",ic:"dumpling"},
+      {n:"经典鲜肉小笼",d:"기본 돼지고기 샤오롱바오.",p:"약 ¥30~",ic:"dumpling"},
+      {n:"冰糖葫芦 탕후루",d:"식후 城隍庙 노점에서 — 网红 奶皮子糖葫芦는 ¥49~98로 비쌈.",p:"약 ¥15~",ic:"cake"}
     ]},
-  {id:"a41",day:7,time:"11:30",end:"12:30",title:"점심",cat:"식사",cost:40000,maps:"",note:"",review:false},
-  {id:"a42",day:7,time:"14:00",end:"15:00",title:"숙소 → 공항 이동",cat:"이동",cost:35000,maps:"上海浦东国际机场",note:"",review:false},
-  {id:"a43",day:0,time:"09:30",end:"11:30",title:"豫园 (예원)",cat:"관광",cost:15000,maps:"豫园 上海",note:"명·청대 고전 정원 + 위안 상가 거리(예원라오제). 정원 입장권 1인 약 ¥40, 상가 거리는 무료.",resv:"온라인 사전 예매 권장 ('上海豫园' 미니프로그램). 현장 매표도 가능.",review:false},
-  {id:"a44",day:0,time:"16:00",end:"18:00",title:"난징동루 보행자거리 (南京东路)",cat:"관광",cost:0,maps:"南京东路步行街 上海",note:"상하이 대표 보행자 쇼핑 거리. 와이탄(外滩)까지 도보로 이어집니다.",review:false},
-  {id:"a45",day:0,time:"18:30",end:"19:30",title:"황푸강 유람선 (黄浦江夜游)",cat:"관광",cost:50000,maps:"十六铺码头 黄浦江游览 上海",note:"야간 유람 약 45분~1시간, 와이탄·동방명주 야경. 十六铺码头 출발.",resv:"야간 유람선은 사전 예약 권장 (Trip.com·현지 플랫폼). 운항 약 18:00~21:00.",review:false}
+  {id:"a47",day:8,time:"09:00",end:"12:00",title:"휴식 · 자유시간",cat:"휴식",cost:0,maps:"#HOTEL#",note:"토요일 — 별도 일정 없이 함께 쉬는 시간.",review:false},
+  {id:"a48",day:8,time:"12:00",end:"14:00",title:"도미노 피자 (휴식일 컴포트)",cat:"식사",cost:40000,maps:"达美乐 Domino's 上海",note:"휴식일 — 숙소에서 배달로 편하게. 达美乐(Domino's) 앱/배달.",review:false,
+    menu:[
+      {n:"피자 + 사이드",d:"중국 도미노 인기 피자 + 윙·파스타.",p:"2인 약 ¥120",ic:"bread"}
+    ]},
+  {id:"a49",day:8,time:"14:00",end:"14:30",title:"숙소 → 浦东 스파 이동",cat:"이동",cost:15000,maps:"漾SPACE汤泉生活 陆家嘴 上海",note:"황푸→浦电路 지하철 약 25분.",review:false},
+  {id:"a50",day:8,time:"18:30",end:"20:30",title:"훠궈 — 海底捞 (마지막 만찬)",cat:"식사",cost:80000,maps:"海底捞火锅 上海",note:"마지막 만찬. 海底捞는 무난·서비스 좋음. 哥老官·太和殿(외탄)은 대기·예약 필수.",resv:"인기 훠궈는 대기 김 — 大众点评으로 줄서기/예약 권장.",review:false,
+    menu:[
+      {n:"훠궈 모둠",d:"마라/백탕 쌍솥 + 고기·새우·채소.",p:"2인 약 ¥300",ic:"soup"},
+      {n:"海底捞 서비스",d:"수타면 쇼·생일 이벤트 등.",p:"—",ic:"noodle"}
+    ]},
+  {id:"a43",day:7,time:"09:30",end:"11:30",title:"豫园 (예원)",cat:"관광",cost:15000,maps:"豫园 上海",note:"명·청대 고전 정원 + 위안 상가 거리(예원라오제). 정원 입장권 1인 약 ¥40, 상가 거리는 무료.",resv:"온라인 사전 예매 권장 ('上海豫园' 미니프로그램). 현장 매표도 가능.",review:false},
+  {id:"a44",day:7,time:"16:00",end:"18:00",title:"난징동루 보행자거리 (南京东路)",cat:"관광",cost:0,maps:"南京东路步行街 上海",note:"상하이 대표 보행자 쇼핑 거리. 와이탄(外滩)까지 도보로 이어집니다.",review:false},
+  {id:"a45",day:7,time:"18:30",end:"19:30",title:"황푸강 유람선 (黄浦江夜游)",cat:"관광",cost:50000,maps:"十六铺码头 黄浦江游览 上海",note:"야간 유람 약 45분~1시간, 와이탄·동방명주 야경. 十六铺码头 출발.",resv:"야간 유람선은 사전 예약 권장 (Trip.com·현지 플랫폼). 운항 약 18:00~21:00.",review:false},
+
+  {id:"a51",day:6,time:"16:00",end:"16:30",title:"喜茶 HEYTEA 밀크티 (쇼핑 중 간식)",cat:"카페",cost:15000,maps:"喜茶 HEYTEA 南京西路 上海",note:"난징시루에서 grab-and-go. 콜라보 시즌엔 줄 길어 배달앱 추천.",review:false,
+    menu:[
+      {n:"芝芝莓莓·葡萄 등",d:"喜茶 시그니처 과일 밀크티/티.",p:"약 ¥20~32",ic:"tea"},
+      {n:"라인업",d:"霸王茶姬·茉莉奶白·茶百道도 인근.",p:"약 ¥15~",ic:"tea"}
+    ]}
 ];}
 
 function freshState(){
-  return { startDate:"2026-07-16", numDays:7, hotel:"Qiuwang Hotel Shanghai", addLinda:false, activities:defaults() };
+  return { startDate:"2026-07-18", numDays:9, hotel:"Qiuwang Hotel Shanghai", addLinda:false, prep:{}, activities:defaults() };
 }
 
 let state = load();
@@ -446,8 +544,20 @@ function load(){
           numDays:p.numDays||fs.numDays,
           hotel:p.hotel||fs.hotel,
           addLinda:!!p.addLinda,
+          prep:p.prep||{},
           activities:p.activities
         };
+      }
+    }
+    // 이전 버전 저장본이 있으면 설정만 이어받음 (날짜·일정은 새 기본값 사용)
+    const old=localStorage.getItem("shanghai_trip_2026_v5")||localStorage.getItem("shanghai_trip_2026_v4");
+    if(old){
+      const p=JSON.parse(old);
+      if(p){
+        fs.numDays=p.numDays||fs.numDays;
+        fs.hotel=p.hotel||fs.hotel;
+        fs.addLinda=!!p.addLinda;
+        fs.prep=p.prep||{};
       }
     }
   }catch(e){}
@@ -566,7 +676,7 @@ function renderTimeline(){
       </div>
       ${a.note?`<div class="note">📝 ${esc(a.note)}</div>`:''}
       ${a.review&&a.reviewReason?`<div class="note">⚠ ${esc(a.reviewReason)}</div>`:''}
-      ${a.resv?`<div class="note" style="color:#5a4a8a">📅 ${esc(a.resv)}</div>`:''}
+      ${a.resv?`<div class="note" style="color:#5a4a8a">📅 ${esc(a.resv)}${RESV_URL[a.id]?` · <a class="maplink" target="_blank" rel="noopener" href="${RESV_URL[a.id]}">🔗 예약 페이지</a>`:''}</div>`:''}
       ${menuHtml}
     </div>`;
   }).join("");
@@ -667,6 +777,22 @@ function renderReview(){
   }).join("");
 }
 
+function renderPrep(){
+  const done=PREP.filter(p=>state.prep[p.id]).length;
+  document.getElementById("prep-count").textContent=`(${done}/${PREP.length} 완료)`;
+  document.getElementById("prep-list").innerHTML=PREP.map(p=>{
+    const checked=!!state.prep[p.id];
+    return `<label class="prep-item ${checked?'done':''}">
+      <input type="checkbox" data-prep="${p.id}" ${checked?'checked':''}>
+      <div><div class="prep-n ${checked?'done':''}">${esc(p.n)}</div>
+      <div class="prep-d">${esc(p.d)}</div></div>
+    </label>`;
+  }).join("");
+  document.querySelectorAll("[data-prep]").forEach(b=>b.onchange=()=>{
+    state.prep[b.dataset.prep]=b.checked; save(); renderPrep();
+  });
+}
+
 function renderResv(){
   const items=state.activities.filter(a=>a.resv);
   const done=items.filter(a=>a.booked).length;
@@ -678,7 +804,7 @@ function renderResv(){
     return `<div class="chk-item ${a.booked?'done':''}">
       <input type="checkbox" data-book="${a.id}" ${a.booked?'checked':''}>
       <div><div class="chk-t ${a.booked?'done':''}">${esc(a.title)} <span style="color:#9aa0a6;font-weight:400">· ${where}</span></div>
-      <div class="chk-r">${esc(a.resv)}</div></div>
+      <div class="chk-r">${esc(a.resv)}${RESV_URL[a.id]?` <a class="maplink" target="_blank" rel="noopener" href="${RESV_URL[a.id]}">🔗 예약하기</a>`:''}</div></div>
     </div>`;
   }).join("");
   cont.querySelectorAll("[data-book]").forEach(b=>b.onchange=()=>{
@@ -687,11 +813,20 @@ function renderResv(){
   });
 }
 
+function renderFlights(){
+  const c=document.getElementById("flights"); if(!c) return;
+  c.innerHTML=FLIGHTS.map(f=>
+    `<a class="btn-route" style="margin-bottom:7px;text-align:left" target="_blank" rel="noopener" href="${f.url}">
+      <div>✈️ ${esc(f.label)}</div>
+      <div style="font-weight:400;font-size:12px;opacity:.92;margin-top:2px">${esc(f.desc)}</div>
+    </a>`).join("");
+}
+
 function renderAll(){
   DAYS=buildDays();
   if(curDay>state.numDays) curDay=state.numDays;
   if(curDay<1) curDay=1;
-  renderHeader(); renderTabs(); renderTimeline();
+  renderHeader(); renderPrep(); renderFlights(); renderTabs(); renderTimeline();
   renderZone(); renderBudget(); renderPool(); renderResv(); renderReview();
 }
 
